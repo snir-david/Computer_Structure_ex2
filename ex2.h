@@ -1,14 +1,14 @@
 //
-// Created by snira on 28/11/2020.
+// Created by Snir David Nahari on 28/11/2020.
 //
 
 #ifndef COMPUTER_STRUCTURE_EX2_EX2_H
 #define COMPUTER_STRUCTURE_EX2_EX2_H
 
 
-void twoArgs(char *oldFileName, char *newFileName);
-void fourArgs(char *oldFileName, char *newFileName, char* srcOsFlag, char* destOsFlag);
-void fiveArgs(char *oldFileName, char *newFileName, char* srcOsFlag, char* destOsFlag, char* byteOrderFlag);
+void ReadAndSave(char *oldFileName, char *newFileName);
+void changeCodingFile(char *oldFileName, char *newFileName, char* srcOsFlag, char* destOsFlag);
+void changeCodingFileWithSwap(char *oldFileName, char *newFileName, char* srcOsFlag, char* destOsFlag, char* byteOrderFlag);
 
 
 
