@@ -1,0 +1,100 @@
+Index: ex2.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- ex2.c	(date 1606681185220)
++++ ex2.c	(date 1606681185220)
+@@ -2,63 +2,64 @@
+ //
+ 
+ #include <stdio.h>
+-#include <String.h>
++#include <string.h>
+ #include "ex2.h"
+ 
+-char* checkFlag(char* flag) {
+-    int srcFlagSize = 0, dstFlagSize = 0;
+-    char srcFlagCode[srcFlagSize], dstFlagCode[dstFlagSize];
+-    if (flag == "-unix") {
+-        srcFlagSize = 2;
+-        srcFlagCode[0] = 0x00;
+-        srcFlagCode[1] = 0x0a;
++char *checkFlag(char *flag) {
++    char FlagCode[4], *flags[] = {"-unix", "-mac", "-win"};
++    if (strcmp(flag, flags[0]) == 0) {
++        FlagCode[0] = 0x00;
++        FlagCode[1] = 0x0a;
+     }
+-    if (flag == "-mac") {
+-        srcFlagSize = 2;
+-        srcFlagCode[0] = 0x00;
+-        srcFlagCode[1] = 0x0d;
++    if (strcmp(flag, flags[1]) == 0) {
++        FlagCode[0] = 0x00;
++        FlagCode[1] = 0x0d;
+     }
+-    if (flag == "-win") {
+-        srcFlagSize = 4;
+-        srcFlagCode[0] = 0x00;
+-        srcFlagCode[1] = 0x0d;
+-        srcFlagCode[2] = 0x00;
+-        srcFlagCode[3] = 0x0a;
++    if (strcmp(flag, flags[2]) == 0) {
++        FlagCode[0] = 0x00;
++        FlagCode[1] = 0x0d;
++        FlagCode[2] = 0x00;
++        FlagCode[3] = 0x0a;
+     }
+-    return srcFlagCode;
++    return *FlagCode;
+ }
+ 
+-int checkBOM(char* bom) {
++int checkBOM(char *bom) {
+ 
+ }
+ 
+-void twoArgs(char *oldFileName, char *newFileName){
++void twoArgs(char *oldFileName, char *newFileName) {
+     FILE *oldFilePtr, *newFilePtr;
+     char buffer[1];
+     oldFilePtr = fopen(oldFileName, "rb");
+     newFilePtr = fopen(newFileName, "wb");
+-    while (fread(buffer, 1, 1, oldFilePtr) != 0){
++    while (fread(buffer, 1, 1, oldFilePtr) != 0) {
+         fwrite(buffer, 1, 1, newFilePtr);
+     }
+     fclose(newFilePtr);
+     fclose(oldFilePtr);
+ }
+-void fourArgs(char *oldFileName, char *newFileName, char* srcOsFlag, char* destOsFlag){
++
++void fourArgs(char *oldFileName, char *newFileName, char *srcOsFlag, char *destOsFlag) {
+     FILE *oldFilePtr, *newFilePtr;
+     char *srcCode, *destCode;
+-    char buffer[1];
++    char buffer[2];
+     srcCode = checkFlag(srcOsFlag);
+     destCode = checkFlag(destOsFlag);
+     oldFilePtr = fopen(oldFileName, "rb");
+     newFilePtr = fopen(newFileName, "wb");
+-    while (fread(buffer, 1, 1, oldFilePtr) != 0){
+-        if (buffer)
+-        fwrite(buffer, 1, 1, newFilePtr);
++    while (fread(buffer, 1, 2, oldFilePtr) != 0) {
++        if (1) {
++            fwrite(buffer, 1, 2, newFilePtr);
++        } else {
++            fwrite(destCode, 1, strlen(destCode), newFilePtr);
++        }
+     }
+     fclose(newFilePtr);
+     fclose(oldFilePtr);
+ }
+-void fiveArgs(char *oldFileName, char *newFileName, char* srcOsFlag, char* destOsFlag, char* byteOrderFlag){
++
++void fiveArgs(char *oldFileName, char *newFileName, char *srcOsFlag, char *destOsFlag, char *byteOrderFlag) {
+ 
+ }
+ 
