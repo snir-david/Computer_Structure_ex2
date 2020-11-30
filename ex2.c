@@ -38,7 +38,7 @@ void checkBomAndSwap(int *isBig, char *buffer, FILE *oldFile, FILE *newFile) {
         fread(buffer, 1, 1, oldFile);
         fwrite(&firstChar, 1, 1, newFile);
         //changing isBig to 1 - source file is in Big Endian
-        isBig = 1;
+        *isBig = 1;
     } else {     //if first char is FF - text in Little Endian
         //Swap to Big Endian
         fwrite(&firstChar, 1, 1, newFile);
@@ -46,12 +46,12 @@ void checkBomAndSwap(int *isBig, char *buffer, FILE *oldFile, FILE *newFile) {
         fread(buffer, 1, 1, oldFile);
         fwrite(&secondChar, 1, 1, newFile);
         //changing isBig to 0 - source file is in Little Endian
-        isBig = 0;
+        *isBig = 0;
     }
 }
 
 /* reading source file and writing it to a new file */
-void ReadAndSave(char *oldFileName, char *newFileName) {
+void readAndSave(char *oldFileName, char *newFileName) {
     FILE *oldFilePtr, *newFilePtr;
     //buffer for reading from file
     char buffer[1];
@@ -69,6 +69,7 @@ void ReadAndSave(char *oldFileName, char *newFileName) {
     //closing files
     fclose(newFilePtr);
     fclose(oldFilePtr);
+    return;
 }
 
 /* reading source file in src flag coding and writing it to a new file in dest flag coding  */
@@ -92,14 +93,14 @@ void changeCodingFile(char *oldFileName, char *newFileName, char *srcOsFlag, cha
         if (buffer[0] != srcCode[0]) {
             fwrite(buffer, 1, 1, newFilePtr);
         } else { //if byte is new line in src flag - change it to the dst flag
+            //checking if source flag is win - read more 2 bytes for 00, \n
+            if (strcmp(srcOsFlag, flagsList[2]) == 0) {
+                fread(buffer, 1, 1, oldFilePtr);
+                fread(buffer, 1, 1, oldFilePtr);
+            }
             //checking in dest flag is not win
             if (strcmp(destOsFlag, flagsList[2])) {
                 fwrite(destCode, 1, 1, newFilePtr);
-                //checking if source flag is win - read more 2 bytes for 00, \n
-                if (strcmp(srcOsFlag, flagsList[2]) == 0) {
-                    fread(buffer, 1, 1, oldFilePtr);
-                    fread(buffer, 1, 1, oldFilePtr);
-                }
             } else { //dest flag is win - write 3 byte - '\r' '00' '\n'
                 fwrite(destCode, 1, 1, newFilePtr);
                 fwrite(&zeroPad, 1, 1, newFilePtr);
@@ -110,6 +111,7 @@ void changeCodingFile(char *oldFileName, char *newFileName, char *srcOsFlag, cha
     //closing files
     fclose(newFilePtr);
     fclose(oldFilePtr);
+    return;
 }
 
 /* reading source file in src flag coding and writing it to a new file in dest flag coding.
@@ -139,14 +141,14 @@ changeCodingFileWithSwap(char *oldFileName, char *newFileName, char *srcOsFlag, 
             if (buffer[0] != srcCode[0]) {
                 fwrite(buffer, 1, 1, newFilePtr);
             } else { //if byte is new line in src flag - change it to the dst flag
+                //checking if source flag is win - read more 2 bytes for 00, \n
+                if (strcmp(srcOsFlag, flagsList[2]) == 0) {
+                    fread(buffer, 1, 1, oldFilePtr);
+                    fread(buffer, 1, 1, oldFilePtr);
+                }
                 //checking in dest flag is not win
                 if (strcmp(destOsFlag, flagsList[2])) {
                     fwrite(destCode, 1, 1, newFilePtr);
-                    //checking if source flag is win - read more 2 bytes for 00, \n
-                    if (strcmp(srcOsFlag, flagsList[2]) == 0) {
-                        fread(buffer, 1, 1, oldFilePtr);
-                        fread(buffer, 1, 1, oldFilePtr);
-                    }
                 } else { //dest flag is win - write 3 byte - '\r' '00' '\n'
                     fwrite(destCode, 1, 1, newFilePtr);
                     fwrite(&zeroPad, 1, 1, newFilePtr);
@@ -164,13 +166,13 @@ changeCodingFileWithSwap(char *oldFileName, char *newFileName, char *srcOsFlag, 
                 fwrite(buffer + 1, 1, 1, newFilePtr);
                 fwrite(buffer, 1, 1, newFilePtr);
             } else {
+                //source flag is win - read more 2 bytes for 00, \n
+                if (strcmp(srcOsFlag, flagsList[2]) == 0) {
+                    fread(buffer, 1, 1, oldFilePtr);
+                    fread(buffer, 1, 1, oldFilePtr);
+                }
                 //dest Flag - different from win
                 if (strcmp(destOsFlag, flagsList[2])) {
-                    //source flag is win - read more 2 bytes for 00, \n
-                    if (strcmp(srcOsFlag, flagsList[2]) == 0) {
-                        fread(buffer, 1, 1, oldFilePtr);
-                        fread(buffer, 1, 1, oldFilePtr);
-                    }
                     //if text is Big - swap to Little
                     if (isBig) {
                         fwrite(destCode, 1, 1, newFilePtr);
@@ -197,6 +199,10 @@ changeCodingFileWithSwap(char *oldFileName, char *newFileName, char *srcOsFlag, 
         }
 
     }
+    //closing files
+    fclose(newFilePtr);
+    fclose(oldFilePtr);
+    return;
 }
 
 /* main function - getting arguments from command line and checking case with switch.*/
@@ -204,7 +210,7 @@ int main(int argc, char *argv[]) {
     //checking cases according to argc
     switch (argc) {
         case 3:  // 2 argument (beside the program name)
-            ReadAndSave(argv[1], argv[2]);
+            readAndSave(argv[1], argv[2]);
             break;
 
         case 5: // 4 argument (beside the program name)
